@@ -778,10 +778,14 @@ def train_task_stopped(state):
 
 def start_train_process(state, cmd):
     kwargs = {"shell": True, "cwd": now_dir}
+    training_env = os.environ.copy()
+    python_path = training_env.get("PYTHONPATH")
+    training_env["PYTHONPATH"] = (
+        now_dir + os.pathsep + python_path if python_path else now_dir
+    )
     if "train/train.py" in cmd.replace("\\", "/"):
-        training_env = os.environ.copy()
         training_env["RVC_CUDA_GRAPH"] = "0"
-        kwargs["env"] = training_env
+    kwargs["env"] = training_env
     if platform.system() == "Windows":
         kwargs["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP
     else:
