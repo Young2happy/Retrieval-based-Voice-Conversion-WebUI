@@ -124,7 +124,9 @@ class Pipeline(object):
 
         try:
             uv = f0 == 0
-            f0[uv] = np.interp(np.where(uv)[0], np.where(~uv)[0], f0[~uv])
+            voiced = np.where(~uv)[0]
+            if voiced.size:
+                f0[uv] = np.interp(np.where(uv)[0], voiced, f0[voiced])
         except Exception:
             traceback.print_exc()
         f0 *= pow(2, f0_up_key / 12)
